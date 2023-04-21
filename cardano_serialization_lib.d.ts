@@ -4274,6 +4274,10 @@ export class PlutusWitness {
 */
   script(): PlutusScript | undefined;
 /**
+* @returns {PlutusScriptSource}
+*/
+  script_source(): PlutusScriptSource;
+/**
 * @returns {PlutusData | undefined}
 */
   datum(): PlutusData | undefined;
@@ -4281,6 +4285,11 @@ export class PlutusWitness {
 * @returns {Redeemer}
 */
   redeemer(): Redeemer;
+/**
+* @param {BigNum} index
+* @returns {PlutusWitness}
+*/
+  clone_with_redeemer_index(index: BigNum): PlutusWitness;
 }
 /**
 */

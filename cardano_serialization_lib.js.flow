@@ -5231,6 +5231,11 @@ declare export class PlutusWitness {
   script(): PlutusScript | void;
 
   /**
+   * @returns {PlutusScriptSource}
+   */
+  script_source(): PlutusScriptSource;
+
+  /**
    * @returns {PlutusData | void}
    */
   datum(): PlutusData | void;
@@ -5239,6 +5244,12 @@ declare export class PlutusWitness {
    * @returns {Redeemer}
    */
   redeemer(): Redeemer;
+
+  /**
+   * @param {BigNum} index
+   * @returns {PlutusWitness}
+   */
+  clone_with_redeemer_index(index: BigNum): PlutusWitness;
 }
 /**
  */

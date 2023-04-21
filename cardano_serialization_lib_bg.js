@@ -13717,6 +13717,13 @@ export class PlutusWitness {
         return ret === 0 ? undefined : PlutusScript.__wrap(ret);
     }
     /**
+    * @returns {PlutusScriptSource}
+    */
+    script_source() {
+        const ret = wasm.plutuswitness_script_source(this.ptr);
+        return PlutusScriptSource.__wrap(ret);
+    }
+    /**
     * @returns {PlutusData | undefined}
     */
     datum() {
@@ -13729,6 +13736,15 @@ export class PlutusWitness {
     redeemer() {
         const ret = wasm.plutuswitness_redeemer(this.ptr);
         return Redeemer.__wrap(ret);
+    }
+    /**
+    * @param {BigNum} index
+    * @returns {PlutusWitness}
+    */
+    clone_with_redeemer_index(index) {
+        _assertClass(index, BigNum);
+        const ret = wasm.plutuswitness_clone_with_redeemer_index(this.ptr, index.ptr);
+        return PlutusWitness.__wrap(ret);
     }
 }
 /**

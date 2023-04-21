@@ -1623,8 +1623,10 @@ export function plutuswitness_new_with_ref(a: number, b: number, c: number): num
 export function plutuswitness_new_without_datum(a: number, b: number): number;
 export function plutuswitness_new_with_ref_without_datum(a: number, b: number): number;
 export function plutuswitness_script(a: number): number;
+export function plutuswitness_script_source(a: number): number;
 export function plutuswitness_datum(a: number): number;
 export function plutuswitness_redeemer(a: number): number;
+export function plutuswitness_clone_with_redeemer_index(a: number, b: number): number;
 export function __wbg_plutuswitnesses_free(a: number): void;
 export function plutuswitnesses_get(a: number, b: number): number;
 export function plutuswitnesses_add(a: number, b: number): void;
