@@ -977,6 +977,7 @@ export function create_send_all(a: number, b: number, c: number, d: number): voi
 export function __wbg_mintwitness_free(a: number): void;
 export function mintwitness_new_native_script(a: number): number;
 export function mintwitness_new_plutus_script(a: number, b: number): number;
+export function mintwitness_new_from_plutus_witness(a: number): number;
 export function __wbg_mintbuilder_free(a: number): void;
 export function mintbuilder_new(): number;
 export function mintbuilder_add_asset(a: number, b: number, c: number, d: number): void;

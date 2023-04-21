@@ -3267,6 +3267,11 @@ export class MintWitness {
 * @returns {MintWitness}
 */
   static new_plutus_script(plutus_script: PlutusScriptSource, redeemer: Redeemer): MintWitness;
+/**
+* @param {PlutusWitness} plutus_witness
+* @returns {MintWitness}
+*/
+  static new_from_plutus_witness(plutus_witness: PlutusWitness): MintWitness;
 }
 /**
 */

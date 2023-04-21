@@ -10623,6 +10623,15 @@ export class MintWitness {
         const ret = wasm.mintwitness_new_plutus_script(plutus_script.ptr, redeemer.ptr);
         return MintWitness.__wrap(ret);
     }
+    /**
+    * @param {PlutusWitness} plutus_witness
+    * @returns {MintWitness}
+    */
+    static new_from_plutus_witness(plutus_witness) {
+        _assertClass(plutus_witness, PlutusWitness);
+        const ret = wasm.mintwitness_new_from_plutus_witness(plutus_witness.ptr);
+        return MintWitness.__wrap(ret);
+    }
 }
 /**
 */
