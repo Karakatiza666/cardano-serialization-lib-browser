@@ -15,6 +15,31 @@ export function encrypt_with_password(password: string, salt: string, nonce: str
 */
 export function decrypt_with_password(password: string, data: string): string;
 /**
+* @param {Transaction} tx
+* @param {LinearFee} linear_fee
+* @returns {BigNum}
+*/
+export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
+/**
+* @param {ExUnits} ex_units
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {Transaction} tx
+* @param {ExUnitPrices} ex_unit_prices
+* @returns {BigNum}
+*/
+export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
+/**
+* @param {Address} address
+* @param {TransactionUnspentOutputs} utxos
+* @param {TransactionBuilderConfig} config
+* @returns {TransactionBatchList}
+*/
+export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
+/**
 * @param {TransactionHash} tx_body_hash
 * @param {ByronAddress} addr
 * @param {LegacyDaedalusPrivateKey} key
@@ -103,18 +128,6 @@ export function min_ada_required(assets: Value, has_data_hash: boolean, coins_pe
 */
 export function encode_json_str_to_native_script(json: string, self_xpub: string, schema: number): NativeScript;
 /**
-* @param {string} json
-* @param {number} schema
-* @returns {PlutusData}
-*/
-export function encode_json_str_to_plutus_datum(json: string, schema: number): PlutusData;
-/**
-* @param {PlutusData} datum
-* @param {number} schema
-* @returns {string}
-*/
-export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: number): string;
-/**
 * @param {Uint8Array} bytes
 * @returns {TransactionMetadatum}
 */
@@ -137,30 +150,17 @@ export function encode_json_str_to_metadatum(json: string, schema: number): Tran
 */
 export function decode_metadatum_to_json_str(metadatum: TransactionMetadatum, schema: number): string;
 /**
-* @param {Transaction} tx
-* @param {LinearFee} linear_fee
-* @returns {BigNum}
+* @param {string} json
+* @param {number} schema
+* @returns {PlutusData}
 */
-export function min_fee(tx: Transaction, linear_fee: LinearFee): BigNum;
+export function encode_json_str_to_plutus_datum(json: string, schema: number): PlutusData;
 /**
-* @param {ExUnits} ex_units
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
+* @param {PlutusData} datum
+* @param {number} schema
+* @returns {string}
 */
-export function calculate_ex_units_ceil_cost(ex_units: ExUnits, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {Transaction} tx
-* @param {ExUnitPrices} ex_unit_prices
-* @returns {BigNum}
-*/
-export function min_script_fee(tx: Transaction, ex_unit_prices: ExUnitPrices): BigNum;
-/**
-* @param {Address} address
-* @param {TransactionUnspentOutputs} utxos
-* @param {TransactionBuilderConfig} config
-* @returns {TransactionBatchList}
-*/
-export function create_send_all(address: Address, utxos: TransactionUnspentOutputs, config: TransactionBuilderConfig): TransactionBatchList;
+export function decode_plutus_datum_to_json_str(datum: PlutusData, schema: number): string;
 /**
 */
 export enum CertificateKind {
@@ -219,11 +219,33 @@ export enum NetworkIdKind {
   Mainnet,
 }
 /**
+*/
+export enum StakeCredKind {
+  Key,
+  Script,
+}
+/**
 * Used to choosed the schema for a script JSON string
 */
 export enum ScriptSchema {
   Wallet,
   Node,
+}
+/**
+*/
+export enum TransactionMetadatumKind {
+  MetadataMap,
+  MetadataList,
+  Int,
+  Bytes,
+  Text,
+}
+/**
+*/
+export enum MetadataJsonSchema {
+  NoConversions,
+  BasicConversions,
+  DetailedSchema,
 }
 /**
 */
@@ -302,22 +324,6 @@ export enum PlutusDatumSchema {
 }
 /**
 */
-export enum TransactionMetadatumKind {
-  MetadataMap,
-  MetadataList,
-  Int,
-  Bytes,
-  Text,
-}
-/**
-*/
-export enum MetadataJsonSchema {
-  NoConversions,
-  BasicConversions,
-  DetailedSchema,
-}
-/**
-*/
 export enum CoinSelectionStrategyCIP2 {
 /**
 * Performs CIP2's Largest First ada-only selection. Will error if outputs contain non-ADA assets.
@@ -335,12 +341,6 @@ export enum CoinSelectionStrategyCIP2 {
 * Same as RandomImprove, but before adding ADA, will insert by random-improve for each asset type.
 */
   RandomImproveMultiAsset,
-}
-/**
-*/
-export enum StakeCredKind {
-  Key,
-  Script,
 }
 /**
 */
@@ -2017,6 +2017,88 @@ export class ExUnits {
 }
 /**
 */
+export class FixedTransaction {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {FixedTransaction}
+*/
+  static from_bytes(bytes: Uint8Array): FixedTransaction;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {FixedTransaction}
+*/
+  static from_hex(hex_str: string): FixedTransaction;
+/**
+* @param {Uint8Array} raw_body
+* @param {Uint8Array} raw_witness_set
+* @param {boolean} is_valid
+* @returns {FixedTransaction}
+*/
+  static new(raw_body: Uint8Array, raw_witness_set: Uint8Array, is_valid: boolean): FixedTransaction;
+/**
+* @param {Uint8Array} raw_body
+* @param {Uint8Array} raw_witness_set
+* @param {Uint8Array} raw_auxiliary_data
+* @param {boolean} is_valid
+* @returns {FixedTransaction}
+*/
+  static new_with_auxiliary(raw_body: Uint8Array, raw_witness_set: Uint8Array, raw_auxiliary_data: Uint8Array, is_valid: boolean): FixedTransaction;
+/**
+* @returns {TransactionBody}
+*/
+  body(): TransactionBody;
+/**
+* @returns {Uint8Array}
+*/
+  raw_body(): Uint8Array;
+/**
+* @param {Uint8Array} raw_body
+*/
+  set_body(raw_body: Uint8Array): void;
+/**
+* @param {Uint8Array} raw_witness_set
+*/
+  set_witness_set(raw_witness_set: Uint8Array): void;
+/**
+* @returns {TransactionWitnessSet}
+*/
+  witness_set(): TransactionWitnessSet;
+/**
+* @returns {Uint8Array}
+*/
+  raw_witness_set(): Uint8Array;
+/**
+* @param {boolean} valid
+*/
+  set_is_valid(valid: boolean): void;
+/**
+* @returns {boolean}
+*/
+  is_valid(): boolean;
+/**
+* @param {Uint8Array} raw_auxiliary_data
+*/
+  set_auxiliary_data(raw_auxiliary_data: Uint8Array): void;
+/**
+* @returns {AuxiliaryData | undefined}
+*/
+  auxiliary_data(): AuxiliaryData | undefined;
+/**
+* @returns {Uint8Array | undefined}
+*/
+  raw_auxiliary_data(): Uint8Array | undefined;
+}
+/**
+*/
 export class GeneralTransactionMetadata {
   free(): void;
 /**
@@ -3190,6 +3272,54 @@ export class MintWitness {
 */
 export class MintsAssets {
   free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  to_bytes(): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {MintsAssets}
+*/
+  static from_bytes(bytes: Uint8Array): MintsAssets;
+/**
+* @returns {string}
+*/
+  to_hex(): string;
+/**
+* @param {string} hex_str
+* @returns {MintsAssets}
+*/
+  static from_hex(hex_str: string): MintsAssets;
+/**
+* @returns {string}
+*/
+  to_json(): string;
+/**
+* @returns {MintsAssetsJSON}
+*/
+  to_js_value(): MintsAssetsJSON;
+/**
+* @param {string} json
+* @returns {MintsAssets}
+*/
+  static from_json(json: string): MintsAssets;
+/**
+* @returns {MintsAssets}
+*/
+  static new(): MintsAssets;
+/**
+* @returns {number}
+*/
+  len(): number;
+/**
+* @param {number} index
+* @returns {MintAssets | undefined}
+*/
+  get(index: number): MintAssets | undefined;
+/**
+* @param {MintAssets} mint_assets
+*/
+  add(mint_assets: MintAssets): void;
 }
 /**
 */
@@ -3787,6 +3917,12 @@ export class PlutusData {
 */
   static new_empty_constr_plutus_data(alternative: BigNum): PlutusData;
 /**
+* @param {BigNum} alternative
+* @param {PlutusData} plutus_data
+* @returns {PlutusData}
+*/
+  static new_single_value_constr_plutus_data(alternative: BigNum, plutus_data: PlutusData): PlutusData;
+/**
 * @param {PlutusMap} map
 * @returns {PlutusData}
 */
@@ -3841,6 +3977,11 @@ export class PlutusData {
 * @returns {PlutusData}
 */
   static from_json(json: string, schema: number): PlutusData;
+/**
+* @param {Address} address
+* @returns {PlutusData}
+*/
+  static from_address(address: Address): PlutusData;
 }
 /**
 */
@@ -4028,6 +4169,10 @@ export class PlutusScriptSource {
 */
   static new(script: PlutusScript): PlutusScriptSource;
 /**
+* !!! DEPRECATED !!!
+* This constructor has missed information about plutus script language vesrion. That can affect
+* the script data hash calculation.
+* Use `.new_ref_input_with_lang_ver` instead
 * @param {ScriptHash} script_hash
 * @param {TransactionInput} input
 * @returns {PlutusScriptSource}
@@ -8634,6 +8779,7 @@ export type MintJSON = [string, MintAssetsJSON][];
 export interface MintAssetsJSON {
   [k: string]: string;
 }
+export type MintsAssetsJSON = MintAssetsJSON[];
 export interface MoveInstantaneousRewardJSON {
   pot: MIRPotJSON;
   variant: MIREnumJSON;
